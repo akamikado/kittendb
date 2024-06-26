@@ -37,13 +37,14 @@ const (
 )
 
 var keywords = map[string]TokenType{
-	"CREATE": "TK_CREATE",
-	"FROM":   "TK_FROM",
-	"INSERT": "TK_INSERT",
-	"INTO":   "TK_INTO",
-	"SELECT": "TK_SELECT",
-	"TABLE":  "TK_TABLE",
-	"WHERE":  "TK_WHERE",
+	"CREATE":  TK_CREATE,
+	"FROM":    TK_FROM,
+	"INSERT":  TK_INSERT,
+	"INTEGER": TK_INTEGER,
+	"INTO":    TK_INTO,
+	"SELECT":  TK_SELECT,
+	"TABLE":   TK_TABLE,
+	"WHERE":   TK_WHERE,
 }
 
 func LookupKeyword(identifier string) TokenType {

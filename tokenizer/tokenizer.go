@@ -17,13 +17,29 @@ func New(input []byte) *Tokenizer {
 func (t *Tokenizer) GetToken() Token {
 	var token Token
 
-	if t.readPosition >= len(t.input) {
-		token.Type = EOF
-		token.Literal = ""
-		return token
+	if t.char == ' ' {
+		for ; t.readPosition < len(t.input) && t.input[t.readPosition] == ' '; t.readPosition += 1 {
+		}
+		if t.readPosition < len(t.input) {
+			t.char = t.input[t.readPosition]
+		} else {
+			t.char = 0
+		}
+	} else if t.char == '\n' {
+		for ; t.readPosition < len(t.input) && t.input[t.readPosition] == '\n'; t.readPosition += 1 {
+		}
+		if t.readPosition < len(t.input) {
+			t.char = t.input[t.readPosition]
+		} else {
+			t.char = 0
+		}
 	}
 
 	switch t.char {
+	case 0:
+		token.Type = EOF
+		token.Literal = ""
+		return token
 	case ' ':
 		t.readPosition += 1
 		t.char = t.input[t.readPosition]
@@ -48,11 +64,9 @@ func (t *Tokenizer) GetToken() Token {
 		if isAlphabet(t.char) {
 			token.Literal = t.ReadIdentifier()
 			token.Type = LookupKeyword(token.Literal)
-			t.readPosition -= 1
 		} else if isDigit(t.char) {
 			token.Literal = t.ReadNumber()
 			token.Type = TK_INTEGER
-			t.readPosition -= 1
 		} else {
 			token.Type = TK_ILLEGAL
 		}
@@ -61,6 +75,8 @@ func (t *Tokenizer) GetToken() Token {
 	t.readPosition += 1
 	if t.readPosition < len(t.input) {
 		t.char = t.input[t.readPosition]
+	} else {
+		t.char = 0
 	}
 
 	return token
@@ -92,12 +108,14 @@ func (t *Tokenizer) ReadNumber() string {
 	position := t.readPosition
 	for ; t.readPosition < len(t.input) && isDigit(t.input[t.readPosition]); t.readPosition += 1 {
 	}
-	return string(t.input[position:t.readPosition])
+	t.readPosition -= 1
+	return string(t.input[position : t.readPosition+1])
 }
 
 func (t *Tokenizer) ReadIdentifier() string {
 	position := t.readPosition
 	for ; t.readPosition < len(t.input) && isAlphabet(t.input[t.readPosition]); t.readPosition += 1 {
 	}
-	return string(t.input[position:t.readPosition])
+	t.readPosition -= 1
+	return string(t.input[position : t.readPosition+1])
 }
