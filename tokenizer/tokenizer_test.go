@@ -2,19 +2,20 @@ package tokenizer
 
 import (
 	"reflect"
-	"strings"
 	"testing"
 )
 
 func TestTokenizer(t *testing.T) {
 	tests := []struct {
-		input               []byte
-		expectedIdentifiers []string
+		input               string
+		expectedIdentifiers []Token
 	}{
-		{[]byte("123"), []string{TK_INTEGER, EOF}},
-		{[]byte("abc"), []string{TK_ID, EOF}},
-		{[]byte("SELECT * FROM abc"), []string{TK_SELECT, TK_STAR, TK_FROM, TK_ID, EOF}},
-		{[]byte("CREATE TABLE abc (id INTEGER);"), []string{TK_CREATE, TK_TABLE, TK_ID, TK_LP, TK_ID, TK_INTEGER, TK_RP, TK_SEMI, EOF}},
+		{"123", []Token{{Type: TK_INTEGER, Literal: "123"}, {Type: EOF, Literal: ""}}},
+		{"abc", []Token{{Type: TK_ID, Literal: "abc"}, {Type: EOF, Literal: ""}}},
+		{"abc 123", []Token{{Type: TK_ID, Literal: "abc"}, {Type: TK_INTEGER, Literal: "123"}, {Type: EOF, Literal: ""}}},
+		{"(abc 123)", []Token{{Type: TK_LP, Literal: "("}, {Type: TK_ID, Literal: "abc"}, {Type: TK_INTEGER, Literal: "123"}, {Type: TK_RP, Literal: ")"}, {Type: EOF, Literal: ""}}},
+		{"SELECT * FROM abc", []Token{{Type: TK_SELECT, Literal: "SELECT"}, {Type: TK_STAR, Literal: "*"}, {Type: TK_FROM, Literal: "FROM"}, {Type: TK_ID, Literal: "abc"}, {Type: EOF, Literal: ""}}},
+		{"CREATE TABLE abc (id INTEGER);", []Token{{Type: TK_CREATE, Literal: "CREATE"}, {Type: TK_TABLE, Literal: "TABLE"}, {Type: TK_ID, Literal: "abc"}, {Type: TK_LP, Literal: "("}, {Type: TK_ID, Literal: "id"}, {Type: TK_INTEGER, Literal: "INTEGER"}, {Type: TK_RP, Literal: ")"}, {Type: TK_SEMI, Literal: ";"}, {Type: EOF, Literal: ""}}},
 	}
 
 	for _, test := range tests {
@@ -27,13 +28,9 @@ func TestTokenizer(t *testing.T) {
 			tokens = append(tokens, tokenizer.GetToken())
 		}
 
-		var tokenTypes []string
-		for _, token := range tokens {
-			tokenTypes = append(tokenTypes, string(token.Type))
+		if !reflect.DeepEqual(tokens, test.expectedIdentifiers) {
+			t.Errorf("Expected %v, got %v", test.expectedIdentifiers, tokens)
 		}
 
-		if !reflect.DeepEqual(tokenTypes, test.expectedIdentifiers) {
-			t.Fatalf("expected (%s) got (%s)", strings.Join(test.expectedIdentifiers, " "), strings.Join(tokenTypes, " "))
-		}
 	}
 }
