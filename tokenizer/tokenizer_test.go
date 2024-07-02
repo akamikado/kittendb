@@ -19,7 +19,7 @@ func TestTokenizer(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		tokenizer := New([]byte(test.input))
+		tokenizer := New(test.input)
 
 		var tokens []Token
 

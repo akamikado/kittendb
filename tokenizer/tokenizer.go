@@ -20,9 +20,10 @@ type Tokenizer struct {
 	char         byte
 }
 
-func New(input []byte) *Tokenizer {
-	t := &Tokenizer{input: input}
-	t.char = t.input[t.readPosition]
+func New(input string) *Tokenizer {
+	inputInBytes := []byte(input)
+	t := &Tokenizer{input: inputInBytes}
+	t.char = t.input[t.readPosition.offset]
 	return t
 }
 
