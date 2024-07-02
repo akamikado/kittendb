@@ -30,10 +30,11 @@ const (
 	TK_INTEGER = "TK_INTEGER"
 
 	// operators
-	TK_SEMI = "TK_SEMI"
-	TK_LP   = "TK_LP"
-	TK_RP   = "TK_RP"
-	TK_STAR = "TK_STAR"
+	TK_SEMI  = "TK_SEMI"
+	TK_LP    = "TK_LP"
+	TK_RP    = "TK_RP"
+	TK_STAR  = "TK_STAR"
+	TK_COMMA = "TK_COMMA"
 )
 
 var keywords = map[string]TokenType{

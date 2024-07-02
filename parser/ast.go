@@ -50,9 +50,23 @@ type ExprList struct {
 	Rparen tokenizer.Pos
 }
 
+func (el *ExprList) String() string {
+	var buf bytes.Buffer
+	buf.WriteString("(")
+	for i, expr := range el.Exprs {
+		if i != 0 {
+			buf.WriteString(", ")
+		}
+		buf.WriteString(expr.String())
+	}
+	buf.WriteString(")")
+
+	return buf.String()
+}
+
 type Identifier struct {
-	NamePos tokenizer.Pos //identifier position
-	Name    string        // Identifier name
+	NamePos tokenizer.Pos
+	Name    string
 }
 
 func (i *Identifier) String() string {
@@ -81,8 +95,8 @@ func (cd *ColumnDefinition) String() string {
 }
 
 type ResultColumn struct {
-	Star tokenizer.Pos // position of *
-	Expr Expression    // column expression
+	Star tokenizer.Pos
+	Expr Expression
 }
 
 func (rc *ResultColumn) String() string {
@@ -137,10 +151,11 @@ func (s *SelectStatement) String() string {
 	return buf.String()
 }
 
+// CREATE TABLE Statement
 type CreateTableStatement struct {
-	Create tokenizer.Pos // position of CREATE keyword
-	Table  tokenizer.Pos // position of TABLE keyword
-	Name   *Identifier   // toble name
+	Create tokenizer.Pos
+	Table  tokenizer.Pos
+	Name   *Identifier
 
 	Lparen  tokenizer.Pos
 	Columns []*ColumnDefinition
@@ -166,14 +181,15 @@ func (cts *CreateTableStatement) String() string {
 	return cts.String()
 }
 
+// INSERT Statement
 type InsertStatement struct {
-	Insert tokenizer.Pos // position of INSERT keyword
-	Table  *Identifier   // table name
+	Insert tokenizer.Pos
+	Table  *Identifier
 
-	ColumnsLparen tokenizer.Pos // position of column list left paren
-	Columns       []*Identifier // columns list
-	ColumnsRparen tokenizer.Pos // position of column list right paren
+	ColumnsLparen tokenizer.Pos
+	Columns       []*Identifier
+	ColumnsRparen tokenizer.Pos
 
-	Values     tokenizer.Pos // position of VALUES keyword
-	ValuesList []*ExprList   // list of list of values
+	Values     tokenizer.Pos
+	ValuesList []*ExprList
 }
