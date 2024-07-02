@@ -75,6 +75,9 @@ func (t *Tokenizer) GetToken() Token {
 	case '*':
 		token.Type = TK_STAR
 		token.Literal = "*"
+	case ',':
+		token.Type = TK_COMMA
+		token.Literal = ","
 	default:
 		if isAlphabet(t.char) {
 			token.Literal = t.ReadIdentifier()
