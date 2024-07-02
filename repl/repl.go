@@ -23,7 +23,7 @@ func Start(in io.Reader, out io.Writer) {
 
 		line := scanner.Text()
 
-		t := tokenizer.New([]byte(line))
+		t := tokenizer.New(line)
 
 		for tok := t.GetToken(); tok.Type != tokenizer.EOF; tok = t.GetToken() {
 			fmt.Printf("%+v\n", tok)
