@@ -1,8 +1,22 @@
 package tokenizer
 
+import "fmt"
+
+type Pos struct {
+	offset int
+}
+
+func (p Pos) String() string {
+	return fmt.Sprintf("%d", p.offset)
+}
+
+func (p Pos) IsValid() bool {
+	return p != Pos{}
+}
+
 type Tokenizer struct {
 	input        []byte
-	readPosition int
+	readPosition Pos
 	char         byte
 }
 
@@ -18,18 +32,18 @@ func (t *Tokenizer) GetToken() Token {
 	var token Token
 
 	if t.char == ' ' {
-		for ; t.readPosition < len(t.input) && t.input[t.readPosition] == ' '; t.readPosition += 1 {
+		for ; t.readPosition.offset < len(t.input) && t.input[t.readPosition.offset] == ' '; t.readPosition.offset += 1 {
 		}
-		if t.readPosition < len(t.input) {
-			t.char = t.input[t.readPosition]
+		if t.readPosition.offset < len(t.input) {
+			t.char = t.input[t.readPosition.offset]
 		} else {
 			t.char = 0
 		}
 	} else if t.char == '\n' {
-		for ; t.readPosition < len(t.input) && t.input[t.readPosition] == '\n'; t.readPosition += 1 {
+		for ; t.readPosition.offset < len(t.input) && t.input[t.readPosition.offset] == '\n'; t.readPosition.offset += 1 {
 		}
-		if t.readPosition < len(t.input) {
-			t.char = t.input[t.readPosition]
+		if t.readPosition.offset < len(t.input) {
+			t.char = t.input[t.readPosition.offset]
 		} else {
 			t.char = 0
 		}
@@ -41,12 +55,12 @@ func (t *Tokenizer) GetToken() Token {
 		token.Literal = ""
 		return token
 	case ' ':
-		t.readPosition += 1
-		t.char = t.input[t.readPosition]
+		t.readPosition.offset += 1
+		t.char = t.input[t.readPosition.offset]
 		token = t.GetToken()
 	case '\n':
-		t.readPosition += 1
-		t.char = t.input[t.readPosition]
+		t.readPosition.offset += 1
+		t.char = t.input[t.readPosition.offset]
 		token = t.GetToken()
 	case ';':
 		token.Type = TK_SEMI
@@ -72,9 +86,9 @@ func (t *Tokenizer) GetToken() Token {
 		}
 	}
 
-	t.readPosition += 1
-	if t.readPosition < len(t.input) {
-		t.char = t.input[t.readPosition]
+	t.readPosition.offset += 1
+	if t.readPosition.offset < len(t.input) {
+		t.char = t.input[t.readPosition.offset]
 	} else {
 		t.char = 0
 	}
@@ -83,11 +97,11 @@ func (t *Tokenizer) GetToken() Token {
 }
 
 func (t *Tokenizer) PeekByte() byte {
-	if t.readPosition >= len(t.input)-1 {
+	if t.readPosition.offset >= len(t.input)-1 {
 		return 0
 	}
 
-	return t.input[t.readPosition+1]
+	return t.input[t.readPosition.offset+1]
 }
 
 func isAlphabet(c byte) bool {
@@ -105,17 +119,17 @@ func isDigit(c byte) bool {
 }
 
 func (t *Tokenizer) ReadNumber() string {
-	position := t.readPosition
-	for ; t.readPosition < len(t.input) && isDigit(t.input[t.readPosition]); t.readPosition += 1 {
+	position := t.readPosition.offset
+	for ; t.readPosition.offset < len(t.input) && isDigit(t.input[t.readPosition.offset]); t.readPosition.offset += 1 {
 	}
-	t.readPosition -= 1
-	return string(t.input[position : t.readPosition+1])
+	t.readPosition.offset -= 1
+	return string(t.input[position : t.readPosition.offset+1])
 }
 
 func (t *Tokenizer) ReadIdentifier() string {
-	position := t.readPosition
-	for ; t.readPosition < len(t.input) && isAlphabet(t.input[t.readPosition]); t.readPosition += 1 {
+	position := t.readPosition.offset
+	for ; t.readPosition.offset < len(t.input) && isAlphabet(t.input[t.readPosition.offset]); t.readPosition.offset += 1 {
 	}
-	t.readPosition -= 1
-	return string(t.input[position : t.readPosition+1])
+	t.readPosition.offset -= 1
+	return string(t.input[position : t.readPosition.offset+1])
 }
