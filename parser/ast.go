@@ -44,6 +44,10 @@ type Statement interface {
 
 func (*SelectStatement) stmt() {}
 
+type Query struct {
+	Statements []Statement
+}
+
 type ExprList struct {
 	Lparen tokenizer.Pos
 	Exprs  []Expression
