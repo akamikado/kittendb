@@ -2,8 +2,6 @@ package parser
 
 import (
 	"testing"
-
-	"kittendb/tokenizer"
 )
 
 func TestSelectStatement(t *testing.T) {
@@ -15,10 +13,9 @@ func TestSelectStatement(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		tokenizer := tokenizer.New(test.input)
-		p := New(tokenizer)
+		p := New(test.input)
 
-		stmt := p.EvalSQL(test.input)
+		stmt := p.ParseStatement()
 		checkParserErrors(t, p)
 		if test.expected != stmt.String() {
 			t.Fatalf("expected=%q, got=%q", test.expected, stmt.String())
