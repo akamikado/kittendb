@@ -137,3 +137,16 @@ func (t *Tokenizer) ReadIdentifier() string {
 	t.readPosition.offset -= 1
 	return string(t.input[position : t.readPosition.offset+1])
 }
+
+func (t *Tokenizer) PeekToken() Token {
+	pos := t.readPosition
+	char := t.char
+	token := t.GetToken()
+	t.char = char
+	t.readPosition = pos
+	return token
+}
+
+func (t *Tokenizer) GetPos() Pos {
+	return t.readPosition
+}
