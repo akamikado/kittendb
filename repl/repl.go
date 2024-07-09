@@ -30,7 +30,7 @@ func Start(in io.Reader, out io.Writer) {
 
 		t := tokenizer.New(line)
 
-		for tok := t.GetToken(); tok.Type != tokenizer.EOF; tok = t.GetToken() {
+		for tok, _ := t.GetToken(); tok.Type != tokenizer.EOF; tok, _ = t.GetToken() {
 			fmt.Printf("%+v\n", tok)
 		}
 	}
