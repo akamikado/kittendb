@@ -44,6 +44,8 @@ type Statement interface {
 	stmt()
 }
 
+func (*InsertStatement) stmt() {}
+
 func (*SelectStatement) stmt() {}
 
 type Query struct {
@@ -202,7 +204,9 @@ func (cts *CreateTableStatement) String() string {
 // INSERT Statement
 type InsertStatement struct {
 	Insert tokenizer.Pos
-	Table  *Identifier
+	Into   tokenizer.Pos
+
+	Table *Identifier
 
 	ColumnsLparen tokenizer.Pos
 	Columns       []*Identifier
@@ -210,4 +214,26 @@ type InsertStatement struct {
 
 	Values     tokenizer.Pos
 	ValuesList []*ExprList
+}
+
+func (is *InsertStatement) String() string {
+	var buf bytes.Buffer
+	buf.WriteString("INSERT INTO ")
+	buf.WriteString(is.Table.String())
+	buf.WriteString(" (")
+	for _, col := range is.Columns {
+		if col != is.Columns[0] {
+			buf.WriteString(", ")
+		}
+		buf.WriteString(col.String())
+	}
+	buf.WriteString(") VALUES ")
+	for _, expr := range is.ValuesList {
+		if expr != is.ValuesList[0] {
+			buf.WriteString(", ")
+		}
+		buf.WriteString(expr.String())
+	}
+
+	return buf.String()
 }

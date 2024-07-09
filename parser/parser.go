@@ -48,6 +48,8 @@ func (p *Parser) ParseStatement() (Statement, error) {
 	switch p.Peek().Type {
 	case tokenizer.TK_SELECT:
 		return p.ParseSelectStatement()
+	case tokenizer.TK_INSERT:
+		return p.ParseInsertStatement()
 	default:
 		// TODO: errors
 		return nil, nil
@@ -147,4 +149,11 @@ func (p *Parser) ParseTableName() (Source, error) {
 	table := &Identifier{NamePos: p.pos, Name: p.token.Literal}
 	src := &TableName{Name: table}
 	return src, nil
+}
+
+func (p *Parser) ParseInsertStatement() (*InsertStatement, error) {
+	p.NextToken()
+	stmt := &InsertStatement{Insert: p.pos}
+
+	return stmt, nil
 }
