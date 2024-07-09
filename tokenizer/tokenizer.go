@@ -4,6 +4,8 @@ import "fmt"
 
 type Pos struct {
 	offset int
+	line   int
+	column int
 }
 
 func (p Pos) String() string {
@@ -35,6 +37,7 @@ func (t *Tokenizer) GetToken() (Token, Pos) {
 
 	if t.char == ' ' {
 		for ; t.readPosition.offset < len(t.input) && t.input[t.readPosition.offset] == ' '; t.readPosition.offset += 1 {
+			t.readPosition.column += 1
 		}
 		if t.readPosition.offset < len(t.input) {
 			t.char = t.input[t.readPosition.offset]
@@ -43,6 +46,8 @@ func (t *Tokenizer) GetToken() (Token, Pos) {
 		}
 	} else if t.char == '\n' {
 		for ; t.readPosition.offset < len(t.input) && t.input[t.readPosition.offset] == '\n'; t.readPosition.offset += 1 {
+			t.readPosition.line += 1
+			t.readPosition.column = 1
 		}
 		if t.readPosition.offset < len(t.input) {
 			t.char = t.input[t.readPosition.offset]
@@ -59,10 +64,13 @@ func (t *Tokenizer) GetToken() (Token, Pos) {
 		return token, pos
 	case ' ':
 		t.readPosition.offset += 1
+		t.readPosition.column += 1
 		t.char = t.input[t.readPosition.offset]
 		token, pos = t.GetToken()
 	case '\n':
 		t.readPosition.offset += 1
+		t.readPosition.column = 1
+		t.readPosition.line += 1
 		t.char = t.input[t.readPosition.offset]
 		token, pos = t.GetToken()
 	case ';':
@@ -101,6 +109,7 @@ func (t *Tokenizer) GetToken() (Token, Pos) {
 	}
 
 	t.readPosition.offset += 1
+	t.readPosition.column += 1
 	if t.readPosition.offset < len(t.input) {
 		t.char = t.input[t.readPosition.offset]
 	} else {
