@@ -13,13 +13,14 @@ const (
 
 	// keywords
 
-	TK_CREATE = "TK_CREATE"
-	TK_FROM   = "TK_FROM"
-	TK_INSERT = "TK_INSERT"
-	TK_INTO   = "TK_INTO"
-	TK_SELECT = "TK_SELECT"
-	TK_TABLE  = "TK_TABLE"
-	TK_WHERE  = "TK_WHERE"
+	TK_CREATE   = "TK_CREATE"
+	TK_DISTINCT = "TK_DISTINCT"
+	TK_FROM     = "TK_FROM"
+	TK_INSERT   = "TK_INSERT"
+	TK_INTO     = "TK_INTO"
+	TK_SELECT   = "TK_SELECT"
+	TK_TABLE    = "TK_TABLE"
+	TK_WHERE    = "TK_WHERE"
 
 	// identifier
 
@@ -38,14 +39,15 @@ const (
 )
 
 var keywords = map[string]TokenType{
-	"CREATE":  TK_CREATE,
-	"FROM":    TK_FROM,
-	"INSERT":  TK_INSERT,
-	"INTEGER": TK_INTEGER,
-	"INTO":    TK_INTO,
-	"SELECT":  TK_SELECT,
-	"TABLE":   TK_TABLE,
-	"WHERE":   TK_WHERE,
+	"CREATE":   TK_CREATE,
+	"DISTINCT": TK_DISTINCT,
+	"FROM":     TK_FROM,
+	"INSERT":   TK_INSERT,
+	"INTEGER":  TK_INTEGER,
+	"INTO":     TK_INTO,
+	"SELECT":   TK_SELECT,
+	"TABLE":    TK_TABLE,
+	"WHERE":    TK_WHERE,
 }
 
 func LookupKeyword(identifier string) TokenType {
