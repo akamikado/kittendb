@@ -26,6 +26,8 @@ func (*ResultColumn) node() {}
 
 func (*SelectStatement) node() {}
 
+func (*TableName) node() {}
+
 func (*Type) node() {}
 
 type Expression interface {
@@ -81,13 +83,13 @@ type Type struct {
 	Name *Identifier
 }
 
+func (t *Type) String() string {
+	return t.Name.Name
+}
+
 type ColumnDefinition struct {
 	Name *Identifier
 	Type *Type
-}
-
-func (t *Type) String() string {
-	return t.Name.Name
 }
 
 func (cd *ColumnDefinition) String() string {
@@ -95,6 +97,16 @@ func (cd *ColumnDefinition) String() string {
 	buf.WriteString(cd.Name.String())
 	buf.WriteString(" ")
 	buf.WriteString(cd.Type.String())
+	return buf.String()
+}
+
+type TableName struct {
+	Name *Identifier
+}
+
+func (tn *TableName) String() string {
+	var buf bytes.Buffer
+	buf.WriteString(tn.Name.String())
 	return buf.String()
 }
 
@@ -115,6 +127,8 @@ type Source interface {
 	Node
 	source()
 }
+
+func (*TableName) source() {}
 
 // SELECT Statement
 type SelectStatement struct {
