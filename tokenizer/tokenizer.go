@@ -29,8 +29,9 @@ func New(input string) *Tokenizer {
 
 // Todo: Fix implementation of numbers
 // Todo: Fix whitespace and new line handling
-func (t *Tokenizer) GetToken() Token {
+func (t *Tokenizer) GetToken() (Token, Pos) {
 	var token Token
+	var pos Pos
 
 	if t.char == ' ' {
 		for ; t.readPosition.offset < len(t.input) && t.input[t.readPosition.offset] == ' '; t.readPosition.offset += 1 {
@@ -54,38 +55,47 @@ func (t *Tokenizer) GetToken() Token {
 	case 0:
 		token.Type = EOF
 		token.Literal = ""
-		return token
+		pos.offset = t.readPosition.offset
+		return token, pos
 	case ' ':
 		t.readPosition.offset += 1
 		t.char = t.input[t.readPosition.offset]
-		token = t.GetToken()
+		token, pos = t.GetToken()
 	case '\n':
 		t.readPosition.offset += 1
 		t.char = t.input[t.readPosition.offset]
-		token = t.GetToken()
+		token, pos = t.GetToken()
 	case ';':
 		token.Type = TK_SEMI
 		token.Literal = ";"
+		pos.offset = t.readPosition.offset
 	case '(':
 		token.Type = TK_LP
 		token.Literal = "("
+		pos.offset = t.readPosition.offset
 	case ')':
 		token.Type = TK_RP
 		token.Literal = ")"
+		pos.offset = t.readPosition.offset
 	case '*':
 		token.Type = TK_STAR
 		token.Literal = "*"
+		pos.offset = t.readPosition.offset
 	case ',':
 		token.Type = TK_COMMA
 		token.Literal = ","
+		pos.offset = t.readPosition.offset
 	default:
 		if isAlphabet(t.char) {
+			pos.offset = t.readPosition.offset
 			token.Literal = t.ReadIdentifier()
 			token.Type = LookupKeyword(token.Literal)
 		} else if isDigit(t.char) {
+			pos.offset = t.readPosition.offset
 			token.Literal = t.ReadNumber()
 			token.Type = TK_INTEGER
 		} else {
+			pos.offset = t.readPosition.offset
 			token.Type = TK_ILLEGAL
 		}
 	}
@@ -97,7 +107,7 @@ func (t *Tokenizer) GetToken() Token {
 		t.char = 0
 	}
 
-	return token
+	return token, pos
 }
 
 func (t *Tokenizer) PeekByte() byte {
@@ -141,7 +151,7 @@ func (t *Tokenizer) ReadIdentifier() string {
 func (t *Tokenizer) PeekToken() Token {
 	pos := t.readPosition
 	char := t.char
-	token := t.GetToken()
+	token, _ := t.GetToken()
 	t.char = char
 	t.readPosition = pos
 	return token
