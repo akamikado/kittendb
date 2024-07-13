@@ -1,4 +1,4 @@
-package tokenizer
+package parser
 
 import "fmt"
 
@@ -22,7 +22,7 @@ type Tokenizer struct {
 	char         byte
 }
 
-func New(input string) *Tokenizer {
+func NewTokenizer(input string) *Tokenizer {
 	inputInBytes := []byte(input)
 	t := &Tokenizer{input: inputInBytes}
 	t.char = t.input[t.readPosition.offset]

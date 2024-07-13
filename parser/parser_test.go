@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestSelectStatement(t *testing.T) {
+func TestSQLStatement(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected string
@@ -14,6 +14,8 @@ func TestSelectStatement(t *testing.T) {
 		{"SELECT name FROM patients", "SELECT name FROM patients"},
 		{"SELECT name, age FROM patients", "SELECT name, age FROM patients"},
 		{"SELECT DISTINCT name FROM patients", "SELECT DISTINCT name FROM patients"},
+		{"INSERT INTO users (name, age) VALUES ('John', 30)", "INSERT INTO users (name, age) VALUES ('John', 30)"},
+		{"INSERT INTO users VALUES ('John', 30)", "INSERT INTO users VALUES ('John', 30)"},
 	}
 
 	for _, test := range tests {

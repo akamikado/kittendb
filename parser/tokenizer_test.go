@@ -1,4 +1,4 @@
-package tokenizer
+package parser
 
 import (
 	"reflect"
@@ -20,7 +20,7 @@ func TestTokenizer(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		tokenizer := New(test.input)
+		tokenizer := NewTokenizer(test.input)
 
 		var tokens []Token
 		var positions []Pos

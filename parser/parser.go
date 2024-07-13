@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"kittendb/tokenizer"
+	"github.com/akamikado/kittendb/tokenizer"
 )
 
 type Parser struct {
@@ -152,8 +152,114 @@ func (p *Parser) ParseTableName() (Source, error) {
 }
 
 func (p *Parser) ParseInsertStatement() (*InsertStatement, error) {
+	var err error
+
 	p.NextToken()
 	stmt := &InsertStatement{Insert: p.pos}
 
+	p.NextToken()
+	if p.token.Type == tokenizer.TK_INTO {
+		stmt.Into = p.pos
+	}
+
+	p.NextToken()
+	if stmt.Table, err = p.ParseIdentifier(); err != nil {
+		return nil, err
+	}
+
+	p.NextToken()
+	if p.token.Type == tokenizer.TK_LP {
+		stmt.ColumnsLparen = p.pos
+		p.NextToken()
+		for {
+			if p.token.Type == tokenizer.TK_RP {
+				break
+			}
+			column, err := p.ParseIdentifier()
+			if err != nil {
+				return nil, err
+			}
+			stmt.Columns = append(stmt.Columns, column)
+
+			p.NextToken()
+			if p.token.Type == tokenizer.TK_RP {
+				break
+			} else if p.token.Type != tokenizer.TK_COMMA {
+				// TODO: errors
+				return nil, nil
+			}
+			p.NextToken()
+		}
+		stmt.ColumnsRparen = p.pos
+
+		p.NextToken()
+		switch p.token.Type {
+		case tokenizer.TK_VALUES:
+			stmt.Values = p.pos
+			for {
+				var list ExprList
+				p.NextToken()
+				if p.token.Type != tokenizer.TK_LP {
+					// TODO: errors
+					return nil, nil
+				}
+				p.NextToken()
+				for {
+					expr, err := p.ParseExpression()
+					if err != nil {
+						return nil, err
+					}
+					list.Exprs = append(list.Exprs, expr)
+					p.NextToken()
+					if p.token.Type == tokenizer.TK_RP {
+						break
+					} else if p.token.Type != tokenizer.TK_COMMA {
+						// TODO: errors
+						return nil, nil
+					}
+					p.NextToken()
+				}
+				stmt.ValuesList = append(stmt.ValuesList, &list)
+
+				if p.Peek().Type == tokenizer.TK_COMMA {
+					break
+				}
+				p.NextToken()
+			}
+
+		case tokenizer.TK_SELECT:
+			// TODO: implement
+
+		default:
+			// TODO: errors
+			return nil, nil
+		}
+	}
+
 	return stmt, nil
+}
+
+func (p *Parser) ParseExpression() (Expression, error) {
+	return p.ParseBinaryExpression(tokenizer.LowestPrec + 1)
+}
+
+func (p *Parser) ParseBinaryExpression(prec int) (Expression, error) {
+	x, err := p.ParseOperand()
+	if err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+func (p *Parser) ParseOperand() (Expression, error) {
+	switch p.token.Type {
+	case tokenizer.TK_INTEGER:
+		return &NumberLit{ValuePos: p.pos, Value: p.token.Literal}, nil
+	case tokenizer.TK_NULL:
+		return &NullLit{Pos: p.pos}, nil
+
+	default:
+		// TODO: errors
+		return nil, nil
+	}
 }

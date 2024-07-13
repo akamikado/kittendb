@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"kittendb/tokenizer"
+	"github.com/akamikado/kittendb/tokenizer"
 )
 
 type Node interface {
@@ -22,6 +22,10 @@ func (*Identifier) node() {}
 
 func (*InsertStatement) node() {}
 
+func (*NullLit) node() {}
+
+func (*NumberLit) node() {}
+
 func (*ResultColumn) node() {}
 
 func (*SelectStatement) node() {}
@@ -35,9 +39,13 @@ type Expression interface {
 	expr()
 }
 
+func (*ExprList) expr() {}
+
 func (*Identifier) expr() {}
 
-func (*ExprList) expr() {}
+func (*NullLit) expr() {}
+
+func (*NumberLit) expr() {}
 
 type Statement interface {
 	Node
@@ -79,6 +87,23 @@ type Identifier struct {
 
 func (i *Identifier) String() string {
 	return i.Name
+}
+
+type NullLit struct {
+	Pos tokenizer.Pos
+}
+
+func (nl *NullLit) String() string {
+	return "NULL"
+}
+
+type NumberLit struct {
+	ValuePos tokenizer.Pos
+	Value    string
+}
+
+func (nl *NumberLit) String() string {
+	return nl.Value
 }
 
 type Type struct {
